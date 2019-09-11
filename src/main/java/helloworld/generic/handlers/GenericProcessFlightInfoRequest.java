@@ -55,10 +55,16 @@ public class GenericProcessFlightInfoRequest {
 			
 			final String flightNumberValue = this.flightNumberStaticDataset.get(flightReferenceKey);
 			
-			if (flightNumberRequest.equals(flightNumberValue)) {
+			//if the user's provisioned reference num matches the key in map (e.g. EJU1101 == EJU1101.map) then create response based on key...
+			if (flightNumberRequest.equals(flightReferenceKey)) {
 				
 				return this.createResponse(flightNumberRequest);
 			}
+			
+//			if (flightNumberRequest.equals(flightNumberValue)) {
+//				
+//				return this.createResponse(flightNumberRequest);
+//			}
 			
 		}
 		
@@ -79,7 +85,12 @@ public class GenericProcessFlightInfoRequest {
 		for (int index = 0; index < flightNumAsArray.length; index++) {
 			
 			final String inputAtPos = flightNumAsArray[index];
+			final String literalValue = this.matchValueToLiteral(inputAtPos);
 			
+			formattedString.append(literalValue);
+			formattedString.append(" ");
+			
+			/**
 			if (index >= 3) {
 				
 				final String literalNumber = this.matchNumberToLiteral(inputAtPos);
@@ -91,15 +102,66 @@ public class GenericProcessFlightInfoRequest {
 				formattedString.append(inputAtPos);
 				formattedString.append(" ");				
 			}
+			**/
 			
 		}
 		
 		return formattedString.toString();
 	}
-
+	
+	private String matchValueToLiteral(String inputAtPos) {
+		
+		HashMap<String, String> mapToFormat = new HashMap<String, String>();
+		
+		//potential character matches (EZY, EJU, EZS)
+		mapToFormat.put("E", " E ");
+		mapToFormat.put("Z", " Z ");
+		mapToFormat.put("Y", " Y ");
+		mapToFormat.put("J", " J ");
+		mapToFormat.put("U", " U ");
+		mapToFormat.put("S", " S ");
+		
+		//numbers
+		mapToFormat.put("1", "one");
+		mapToFormat.put("2", "two");
+		mapToFormat.put("3", "three");
+		mapToFormat.put("4", "four");
+		mapToFormat.put("5", "five");
+		mapToFormat.put("6", "six");
+		mapToFormat.put("7", "seven");
+		mapToFormat.put("8", "eight");
+		mapToFormat.put("9", "nine");
+		mapToFormat.put("0", "zero");
+		
+		//match number to relevant match
+		for (String key : mapToFormat.keySet()) {
+			
+			final String matchingEquivalent = mapToFormat.get(key);
+			
+			if (inputAtPos.equals(key)) {
+				
+//				context.getLogger().log("Match on key: " + key);
+				
+				return matchingEquivalent;
+				
+			}
+			
+		}
+		
+		return null;
+	}
+	
 	private String matchNumberToLiteral(String inputAtPos) {
 		
 		HashMap<String, String> mapToFormat = new HashMap<String, String>();
+		
+		//potential character matches (EZY, EJU, EZS)
+		mapToFormat.put("E", " E ");
+		mapToFormat.put("Z", " Z ");
+		mapToFormat.put("Y", " Y ");
+		mapToFormat.put("J", " J ");
+		mapToFormat.put("U", " U ");
+		mapToFormat.put("S", " S ");
 		
 		//numbers
 		mapToFormat.put("1", "one");
@@ -133,15 +195,7 @@ public class GenericProcessFlightInfoRequest {
 
 	private String createResponse(String flightNumberRequest) {
 		
-//
-//		this.flightNumberStaticDataset.put("EJU1101", "EJU 1 1 0 1");
-//		this.flightNumberStaticDataset.put("EZY8272", "EZY 8 2 7 2");
-//		this.flightNumberStaticDataset.put("EJU7948", "EJU 7 9 4 8");
-//		this.flightNumberStaticDataset.put("EZY6194", "EZY 6 1 9 4");
-//		this.flightNumberStaticDataset.put("EJU3862", "EJU 3 8 6 2");
-//		this.flightNumberStaticDataset.put("EZY7158", "EZY 7 1 5 8");
-//		this.flightNumberStaticDataset.put("EJU4380", "EJU 4 3 8 0");
-		
+		//if user's request matches any key in list below, then provide appropriate response...
 		if (flightNumberRequest.equals("EJU1101")) {
 			
 			return FLIGHT_RESPONSE_1101;
@@ -174,11 +228,10 @@ public class GenericProcessFlightInfoRequest {
 		
 		return null;
 	}
-
+	
 	public String simpleGenericResponse() {
 		
 		return "The flight you have just requested for has not arrived yet. Please check again shortly or look out for Alexa updates.";
 		
 	}
-
 }
