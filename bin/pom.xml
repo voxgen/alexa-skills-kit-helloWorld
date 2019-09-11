@@ -4,7 +4,7 @@
   <groupId>alexa-skills-kit-helloworld</groupId>
   <artifactId>alexa-skills-kit-helloworld</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1</version>
+  <version>1.0</version>
   <name>Alexa Skills Kit - HelloWorld</name>
   <url>http://developer.amazon.com/ask</url>
 
@@ -87,13 +87,6 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.10</version>
     </dependency>
-    
-	<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core -->
-	<dependency>
-	    <groupId>com.amazonaws</groupId>
-	    <artifactId>aws-lambda-java-core</artifactId>
-	    <version>1.1.0</version>
-	</dependency>    
     
     <dependency>
 			<groupId>com.amazonaws</groupId>
