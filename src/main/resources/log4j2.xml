@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
+<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2.LambdaAppender">
   <Appenders>
-    <Lambda name="Lambda">
-      <PatternLayout>
-          <pattern>%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1}:%L - %m%n</pattern>
-      </PatternLayout>
+    <Lambda name="LAMBDA">
+      <PatternLayout pattern="%X{AWSRequestId} | %-5p | %c{1}:%L - %m"/>
     </Lambda>
   </Appenders>
-  <Loggers>
+  <Loggers>    
+    <Logger name="com.amazonaws" level="error" additivity="false">
+		<AppenderRef ref="LAMBDA" />
+    </Logger>
+    
+    <Logger name="helloworld" level="debug" additivity="false">
+		<AppenderRef ref="LAMBDA" />
+    </Logger>
+    
     <Root level="info">
-      <AppenderRef ref="Lambda" />
+      <AppenderRef ref="LAMBDA" />
     </Root>
   </Loggers>
 </Configuration>

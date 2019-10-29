@@ -36,6 +36,8 @@ public class BookingReferenceResponseHandler {
 		
 			//{BookingRefNumber}
 		final String intentBookingRefSlotName = intent.getSlot(BOOKING_REFERENCE_SLOT_NAME).getName();
+		
+		
 		final String userInputReferenceValue = intent.getSlot(BOOKING_REFERENCE_SLOT_NAME).getValue();
 		
 		//then pull the name and ifit matches, try and obtain the other side

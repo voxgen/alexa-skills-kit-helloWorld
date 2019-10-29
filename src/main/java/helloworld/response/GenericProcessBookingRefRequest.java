@@ -11,11 +11,11 @@ import java.util.HashMap;
  */
 public class GenericProcessBookingRefRequest {
 	
-	private static final String BOOKING_REF_5665X = null;
-	private static final String BOOKING_REF_6124X = null;
-	private static final String BOOKING_REF_3774Y = null;
-	private static final String BOOKING_REF_2229Y = null;
-	private static final String BOOKING_REF_3555X = null;
+	private static final String BOOKING_REF_5665X = "Booking reference E M 5 6 6 5 X from London to Sochi is for 1 adult only.";
+	private static final String BOOKING_REF_6124X = "Booking reference E M 6 1 2 4 from Paris to Frankfurt is for 2 adults and 2 infants.";
+	private static final String BOOKING_REF_3774Y = "Booking reference E M 3 7 7 4 Y from Lisbon to Bordeaux is for 4 adults.";
+	private static final String BOOKING_REF_2229Y = "Booking reference E M 2 2 2 9 Y from Porto to Bristol is for 2 adults and 1 infant.";
+	private static final String BOOKING_REF_3555X = "Booking reference E M 3 5 5 5 X from Athens to Moscow is for 1 adult only.";
 	
 	private HashMap<String, String> bookingRefStaticDataset = null;
 	
@@ -42,7 +42,8 @@ public class GenericProcessBookingRefRequest {
 			
 			final String bookingRefValueAtPos = this.bookingRefStaticDataset.get(bookingRefKey);
 			
-			if (bookingRefRequest.equals(bookingRefValueAtPos)) {
+			//we need it to match against 'k' in 'k-v' pair
+			if (bookingRefRequest.equals(bookingRefKey)) {
 				
 				return this.createResponse(bookingRefRequest);
 			}
