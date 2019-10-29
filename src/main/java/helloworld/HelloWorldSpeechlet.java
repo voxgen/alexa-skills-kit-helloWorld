@@ -24,6 +24,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 
 import helloworld.generic.handlers.GenericProcessFlightInfoRequest;
+import helloworld.response.BookingReferenceResponseHandler;
 
 /**
  * This sample shows how to create a simple speechlet for handling speechlet
@@ -41,9 +42,12 @@ public class HelloWorldSpeechlet implements Speechlet {
 		// any initialization logic goes here
 	}
 
+	//the 1st function invoked (prompts Skill to play the prompt message)
 	@Override
 	public SpeechletResponse onLaunch(final LaunchRequest request, final Session session) throws SpeechletException {
 		log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
+		
+		//request welcome / init message prompt
 		return getWelcomeResponse();
 	}
 	
@@ -64,6 +68,11 @@ public class HelloWorldSpeechlet implements Speechlet {
 			
 			return getHelloResponse(request.getIntent());
 			
+		} else if("BookingReferenceIntent".equals(intentName)) {
+			
+			log.debug("Logging on resolved to 'BookingReferenceIntent'");
+			return getBookingReferenceIntentResponse(request.getIntent());
+			
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			
 			return getHelpResponse();
@@ -73,7 +82,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 			throw new SpeechletException("Invalid Intent");
 		}
 	}
-
+	
 	@Override
 	public void onSessionEnded(final SessionEndedRequest request, final Session session) throws SpeechletException {
 		log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
@@ -86,8 +95,10 @@ public class HelloWorldSpeechlet implements Speechlet {
 	 * @return SpeechletResponse spoken and visual response for the given intent
 	 */
 	private SpeechletResponse getWelcomeResponse() {
-		String speechText = "Welcome to the Alexa Skills Kit, you can say hello";
-
+		
+//		String speechText = "Welcome to the Alexa Skills Kit, you can say hello";
+		String speechText = "Welcome to the Voxgen Developer Alexa Skills kit. How may I help you?";
+		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
 		card.setTitle("HelloWorld");
@@ -128,6 +139,26 @@ public class HelloWorldSpeechlet implements Speechlet {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(flightNumberResponse);
 //		speech.setText(fallbackSpeechText);
+		
+		return SpeechletResponse.newTellResponse(speech, card);
+	}
+	
+	private SpeechletResponse getBookingReferenceIntentResponse(Intent intent) {
+		
+		BookingReferenceResponseHandler responseHandler = new BookingReferenceResponseHandler(intent);
+		
+		final String bookingRefResponseText = responseHandler.createGenericBookingReferenceResponse();
+		
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("HelloWorld");
+		card.setContent(bookingRefResponseText);
+		// card.setContent(fallbackSpeechText);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(bookingRefResponseText);
+		// speech.setText(fallbackSpeechText);
 		
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
