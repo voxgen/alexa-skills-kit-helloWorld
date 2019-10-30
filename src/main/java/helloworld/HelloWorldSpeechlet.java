@@ -97,7 +97,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 	private SpeechletResponse getWelcomeResponse() {
 		
 //		String speechText = "Welcome to the Alexa Skills Kit, you can say hello";
-		String speechText = "Welcome to the Voxgen Developer Alexa Skills kit. How may I help you?";
+		String speechText = "Welcome to the Vox Gen Developer Alexa Skills kit. How may I help you?";
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();

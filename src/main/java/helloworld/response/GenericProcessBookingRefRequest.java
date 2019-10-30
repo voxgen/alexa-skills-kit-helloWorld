@@ -5,11 +5,16 @@ package helloworld.response;
 
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * @author ashobande
  *
  */
 public class GenericProcessBookingRefRequest {
+	
+	private static final Logger LOGGER = LogManager.getLogger(GenericProcessBookingRefRequest.class);
 	
 	private static final String BOOKING_REF_5665X = "Booking reference E M 5 6 6 5 X from London to Sochi is for 1 adult only.";
 	private static final String BOOKING_REF_6124X = "Booking reference E M 6 1 2 4 from Paris to Frankfurt is for 2 adults and 2 infants.";
@@ -33,6 +38,8 @@ public class GenericProcessBookingRefRequest {
 
 	public String processGetBookingInfo(String bookingRefRequest) {
 		
+		LOGGER.info("\n\nProcessing booking req value: " + bookingRefRequest);
+		
 		return this.matchRequestToResponse(bookingRefRequest);
 	}
 	
@@ -52,6 +59,9 @@ public class GenericProcessBookingRefRequest {
 		
 		//TODO -->> here, implement what was matched / resolved against...
 		final String formattedBookingRef = this.buildGenericNoMatchResponse(bookingRefRequest);
+		
+		LOGGER.info("\n\nFormatted booking reference: " + formattedBookingRef);
+		
 		final String genericResponse = "We've resolved your booking reference as " + formattedBookingRef
 				+ ". If you would like to try again, say Alexa, open september protocol. Goodbye.";
 		
