@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazon.speech.slu.Intent;
+import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -19,12 +20,9 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-
-
 import helloworld.generic.handlers.GenericProcessFlightInfoRequest;
 import helloworld.response.BookingReferenceResponseHandler;
+import helloworld.utils.FormatInputUtils;
 
 /**
  * This sample shows how to create a simple speechlet for handling speechlet
@@ -73,6 +71,15 @@ public class HelloWorldSpeechlet implements Speechlet {
 			log.debug("Logging on resolved to 'BookingReferenceIntent'");
 			return getBookingReferenceIntentResponse(request.getIntent());
 			
+		} else if ("FreeTextIntent".equals(intentName)) {
+			
+			return getSimpleFreeTextResponse(request, session);
+			
+		} else if ("FreeTextFormattedIntent".equals(intentName)) {
+			
+			// here, the only change we make is updating the prefix & possibly the last input
+			return this.createReturnFreeTextFormattedResponse(request.getIntent(), session);
+			
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			
 			return getHelpResponse();
@@ -83,6 +90,61 @@ public class HelloWorldSpeechlet implements Speechlet {
 		}
 	}
 	
+	private SpeechletResponse createReturnFreeTextFormattedResponse(Intent intent, Session session) {
+		
+		final Slot freeTextSlot = intent.getSlot("FreeTextFormattedSlot");
+		final String freeTextRecognizedInput = freeTextSlot.getValue();
+		
+		final String formattedBookingReference = FormatInputUtils.formatBookingReferenceUserInput(freeTextRecognizedInput);
+		final String response = "You entered: " + formattedBookingReference + " . Would you like to try something else? Say free text formatted.";
+		
+		session.setAttribute("RECOGNIZED_INPUT", formattedBookingReference);
+		
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Voxgen Developer App");
+		card.setContent(response);
+//		card.setContent(fallbackSpeechText);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(response);
+		
+		Reprompt reprompt = new Reprompt();
+		reprompt.setOutputSpeech(speech);
+		
+//		return SpeechletResponse.newTellResponse(speech, card);
+		return SpeechletResponse.newAskResponse(speech, reprompt, card);
+	}
+	
+	private SpeechletResponse getSimpleFreeTextResponse(IntentRequest request, Session session) {
+		
+		String fallbackSpeechText = "If you are seeing this, then the lambda is responding to FreeTextIntent...";
+		
+		Intent intent = request.getIntent();
+		
+//		final String flightNumberResponse = this.processFlightNumberResponse(intent);
+		final Slot freeTextSlot = intent.getSlot("FreeTextSlot");
+		final String freeTextRecognizedInput = freeTextSlot.getValue();
+		final String response = "You entered: " + freeTextRecognizedInput + " . Goodbye.";
+		
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Voxgen Developer App");
+		card.setContent(response);
+//		card.setContent(fallbackSpeechText);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(response);
+//		speech.setText(fallbackSpeechText);
+		
+//		session.getAttributes().put(key, value)
+		
+		return SpeechletResponse.newTellResponse(speech, card);
+		
+	}
+
 	@Override
 	public void onSessionEnded(final SessionEndedRequest request, final Session session) throws SpeechletException {
 		log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
@@ -101,7 +163,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("HelloWorld");
+		card.setTitle("Voxgen Developer App");
 		card.setContent(speechText);
 
 		// Create the plain text output.
@@ -131,7 +193,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("HelloWorld");
+		card.setTitle("Voxgen Developer App");
 		card.setContent(flightNumberResponse);
 //		card.setContent(fallbackSpeechText);
 		
@@ -151,7 +213,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("HelloWorld");
+		card.setTitle("Voxgen Developer App");
 		card.setContent(bookingRefResponseText);
 		// card.setContent(fallbackSpeechText);
 		
