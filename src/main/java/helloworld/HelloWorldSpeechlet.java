@@ -126,11 +126,21 @@ public class HelloWorldSpeechlet implements Speechlet {
 //		final String flightNumberResponse = this.processFlightNumberResponse(intent);
 		final Slot freeTextSlot = intent.getSlot("FreeTextSlot");
 		final String freeTextRecognizedInput = freeTextSlot.getValue();
-		final String response = "You entered: " + freeTextRecognizedInput + " . Goodbye.";
+//		final String response = "You entered: " + freeTextRecognizedInput + " .\n\nGoodbye.";
+		
+		final String formattedInput = FormatInputUtils.formatBookingReferenceUserInput(freeTextRecognizedInput);
+		
+		final String response = "You entered: " + freeTextRecognizedInput + 
+									" . You may also have meant " + formattedInput +
+									" . Thanks for trying.";
+		
+		//TODO -->> attempt to use the UTIL object to remove / change prefix
+		
+		
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Voxgen Developer App");
+		card.setTitle("Voxgen FreeText Output");
 		card.setContent(response);
 //		card.setContent(fallbackSpeechText);
 		
@@ -140,8 +150,15 @@ public class HelloWorldSpeechlet implements Speechlet {
 //		speech.setText(fallbackSpeechText);
 		
 //		session.getAttributes().put(key, value)
+//		final String repromptText = "Would you like to try something else? Say free text";
+//		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+//		speech.setText(repromptText);
 		
-		return SpeechletResponse.newTellResponse(speech, card);
+		Reprompt reprompt = new Reprompt();
+		reprompt.setOutputSpeech(speech);
+		
+//		return SpeechletResponse.newTellResponse(speech, reprompt, card);
+		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 		
 	}
 
@@ -213,7 +230,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Voxgen Developer App");
+		card.setTitle("Voxgen Booking Reference");
 		card.setContent(bookingRefResponseText);
 		// card.setContent(fallbackSpeechText);
 		

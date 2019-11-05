@@ -24,32 +24,18 @@ public class FormatInputUtils {
 		formattedString.append(inputValue);
 		
 		//obtain [0] [1] (prefix)
-		final String prefix = inputAsArray[0] + inputAsArray[1];
+		final String char1 = inputAsArray[0];
+		final String char2 = inputAsArray[1];
+		final String prefix = char1 + char2;
 		
-		switch (prefix) {
-		
-			case BM_PREFIX:
-				
-				return EM_PREFIX + formattedString.substring(2, inputValue.length() - 1);
-				
-			case EM_PREFIX:
-				
-				return inputValue;
-				
-			case YN_PREFIX:
-				
-				return EM_PREFIX + formattedString.substring(2, inputValue.length() - 1);
-				
-			case BN_PREFIX:
-				
-				return EM_PREFIX + formattedString.substring(2, inputValue.length() - 1);
-				
-			case EN_PREFIX:
-				
-				return EM_PREFIX + formattedString.substring(2, inputValue.length() - 1);
-				
-			default:
-				return EM_PREFIX + formattedString.substring(2, inputValue.length() - 1);
+		if (prefix.equals(EM_PREFIX)) {
+			
+			return inputValue;
+			
+		} else {
+			
+			return EM_PREFIX + formattedString.substring(2, inputValue.length());
+			
 		}
 		
 	}
