@@ -39,7 +39,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
 		// any initialization logic goes here
 	}
-
+	
 	//the 1st function invoked (prompts Skill to play the prompt message)
 	@Override
 	public SpeechletResponse onLaunch(final LaunchRequest request, final Session session) throws SpeechletException {
@@ -53,18 +53,21 @@ public class HelloWorldSpeechlet implements Speechlet {
 	@Override
 	public SpeechletResponse onIntent(final IntentRequest request, final Session session) throws SpeechletException {
 		
-//        LambdaLogger logger = this.
-		
 		log.info("onIntent requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
 		
 		Intent intent = request.getIntent();
 		String intentName = (intent != null) ? intent.getName() : null;
 
-		if ("HelloWorldIntent".equals(intentName)) {
+//		if ("HelloWorldIntent".equals(intentName)) {
+		if ("FlightNumberLookupIntent".equals(intentName)) {
 			
 			log.debug("Logging on resolved to 'HelloWorldIntent'");
+			return createFlightNumberLookupResponse(request.getIntent());
 			
-			return getHelloResponse(request.getIntent());
+		} else if ("FlightNumberRepeatIntent".equals(intentName)) {
+			
+			//create the re-prompt
+			return this.createFlightLookupRepeatResponse(request, session);
 			
 		} else if("BookingReferenceIntent".equals(intentName)) {
 			
@@ -89,7 +92,30 @@ public class HelloWorldSpeechlet implements Speechlet {
 			throw new SpeechletException("Invalid Intent");
 		}
 	}
-	
+
+	private SpeechletResponse createFlightLookupRepeatResponse(IntentRequest request, Session session) {
+		
+		final Intent intent = request.getIntent();
+		final Slot lookupRepeatSlot = intent.getSlot("FlightNumRepeatValSlot");
+		final String lookupRepeatSlotValue = lookupRepeatSlot.getValue();
+		
+		final String response = "I got '" + lookupRepeatSlotValue + "' .\n\nLet's go again";
+		
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Voxgen FreeText Output");
+		card.setContent(response);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(response);
+		
+		Reprompt reprompt = new Reprompt();
+		reprompt.setOutputSpeech(speech);
+		
+		return SpeechletResponse.newAskResponse(speech, reprompt, card);
+	}
+
 	private SpeechletResponse createReturnFreeTextFormattedResponse(Intent intent, Session session) {
 		
 		final Slot freeTextSlot = intent.getSlot("FreeTextFormattedSlot");
@@ -116,7 +142,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 //		return SpeechletResponse.newTellResponse(speech, card);
 		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
-	
+
 	private SpeechletResponse getSimpleFreeTextResponse(IntentRequest request, Session session) {
 		
 		String fallbackSpeechText = "If you are seeing this, then the lambda is responding to FreeTextIntent...";
@@ -126,16 +152,15 @@ public class HelloWorldSpeechlet implements Speechlet {
 //		final String flightNumberResponse = this.processFlightNumberResponse(intent);
 		final Slot freeTextSlot = intent.getSlot("FreeTextSlot");
 		final String freeTextRecognizedInput = freeTextSlot.getValue();
-//		final String response = "You entered: " + freeTextRecognizedInput + " .\n\nGoodbye.";
+		final String response = "You entered: " + freeTextRecognizedInput + " .\n\nTry something else. Say free text, or Easyjet lookup.";
 		
-		final String formattedInput = FormatInputUtils.formatBookingReferenceUserInput(freeTextRecognizedInput);
+//		final String formattedInput = FormatInputUtils.formatBookingReferenceUserInput(freeTextRecognizedInput);
 		
-		final String response = "You entered: " + freeTextRecognizedInput + 
-									" . You may also have meant " + formattedInput +
-									" . Thanks for trying.";
+//		final String response = "You entered: " + freeTextRecognizedInput + 
+//									" . You may also have meant " + formattedInput +
+//									" . Thanks for trying.";
 		
 		//TODO -->> attempt to use the UTIL object to remove / change prefix
-		
 		
 		
 		// Create the Simple card content.
@@ -193,20 +218,27 @@ public class HelloWorldSpeechlet implements Speechlet {
 
 		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
-
+	
 	/**
 	 * Creates a {@code SpeechletResponse} for the hello intent.
 	 * @param intent 
 	 *
 	 * @return SpeechletResponse spoken and visual response for the given intent
 	 */
-	private SpeechletResponse getHelloResponse(Intent intent) {
+	private SpeechletResponse createFlightNumberLookupResponse(Intent intent) {
 //		String speechText = "Hello world";
 		
 		//default fallback msg...
 		String fallbackSpeechText = "If you are seeing this, then the lambda is responding to HelloWorldIntent...";
 		
-		final String flightNumberResponse = this.processFlightNumberResponse(intent);
+		//TODO -->> sometimes returns null, processing logic has some apparent flaws
+//		final String flightNumberResponse = this.processFlightNumberResponse(intent);
+		
+		final String flightNumberSlotName = "FlightNum";
+		final String userInputFlightValue = intent.getSlot(flightNumberSlotName).getValue();
+		
+		final String flightNumberResponse = "I got '" + userInputFlightValue + "' .\n\nLet's go again.";
+		
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
@@ -217,7 +249,6 @@ public class HelloWorldSpeechlet implements Speechlet {
 		// Create the plain text output.
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(flightNumberResponse);
-//		speech.setText(fallbackSpeechText);
 		
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
@@ -242,6 +273,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
 	
+	//TODO -->> should be tuned abit, but don't need this at the moment for direct read back
 	/**
 	 * 
 	 * @param intent
@@ -260,9 +292,6 @@ public class HelloWorldSpeechlet implements Speechlet {
 			//query datset HashMap for matching flight number...
 			processFlightRequest = new GenericProcessFlightInfoRequest();
 			return processFlightRequest.processGetFlightInfo(userInputFlightValue);
-			
-//			return processFlightRequest.simpleGenericResponse();
-			
 		}
 		
 		return null;

@@ -39,6 +39,6 @@ public final class HelloWorldSpeechletRequestStreamHandler extends SpeechletRequ
     	
         super(new HelloWorldSpeechlet(), supportedApplicationIds);
         
-        logger.debug("Lambda function invoked, request handling on SpeechletRequestStreamHandler");
+        logger.info("Lambda function invoked, request handling on SpeechletRequestStreamHandler");
     }
 }

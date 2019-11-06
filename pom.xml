@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <version>1.0.1</version>
   <name>Alexa Skills Kit - HelloWorld</name>
-  <url>http://developer.amazon.com/ask</url>
+  <url>http://www.voxgen.com</url>
 
   <repositories>
     <repository>
