@@ -103,7 +103,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Voxgen FreeText Output");
+		card.setTitle("Voxgen FlightNumber Match");
 		card.setContent(response);
 		
 		// Create the plain text output.
