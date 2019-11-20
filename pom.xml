@@ -4,7 +4,7 @@
   <groupId>alexa-skills-kit-helloworld</groupId>
   <artifactId>alexa-skills-kit-helloworld</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <name>Alexa Skills Kit - Voxgen Easyjet Flight Lookups</name>
   <url>http://www.voxgen.com</url>
 

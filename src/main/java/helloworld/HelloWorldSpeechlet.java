@@ -83,14 +83,60 @@ public class HelloWorldSpeechlet implements Speechlet {
 			// here, the only change we make is updating the prefix & possibly the last input
 			return this.createReturnFreeTextFormattedResponse(request.getIntent(), session);
 			
+			//TODO -->> called by new AlexaDeveloper app which tests for booking reference(s)
+		} else if ("BookingReferenceRecursiveIntent".equals(intentName)) {
+			
+			return this.createBookingReferenceRecursiveResponse(request, session);
+//			return this.createReturnFreeTextFormattedResponse(request.getIntent(), session);
+			
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			
 			return getHelpResponse();
+			
+		} else if ("AMAZON.StopIntent".equals(intentName)) {
+			
+			//provide a generic stop message
+			return this.genericStopResponse();
+			
+		 }  else if ("AMAZON.CancelIntent".equals(intentName)) {
+			
+			// provide a generic 'cancel' message
+			return this.genericCancelResponse();
 			
 		} else {
 			
 			throw new SpeechletException("Invalid Intent");
 		}
+	}
+	
+	/**
+	 * ***Invoked by SKILLS_KIT 'BookingReferenceLookup'
+	 * 
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+	private SpeechletResponse createBookingReferenceRecursiveResponse(IntentRequest request, Session session) {
+		
+		final Intent intent = request.getIntent();
+		final Slot bookingReferenceSlot = intent.getSlot("BookingReference");
+		final String bookingReferenceValue = bookingReferenceSlot.getValue();
+		
+		final String response = "I got '" + bookingReferenceValue + "' . Let's go again";
+		
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Voxgen Booking Reference Match");
+		card.setContent(response);
+				
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(response);
+				
+		Reprompt reprompt = new Reprompt();
+		reprompt.setOutputSpeech(speech);
+		
+		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
 
 	private SpeechletResponse createFlightLookupRepeatResponse(IntentRequest request, Session session) {
@@ -303,7 +349,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 	 * @return SpeechletResponse spoken and visual response for the given intent
 	 */
 	private SpeechletResponse getHelpResponse() {
-		String speechText = "You can say hello to me!";
+		String speechText = "Say a booking reference number or a flight number!";
 
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
@@ -320,4 +366,37 @@ public class HelloWorldSpeechlet implements Speechlet {
 
 		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
+	
+	private SpeechletResponse genericCancelResponse() {
+		
+		final String cancelResponse = "Thanks for trying out the test app. Goodbye.";
+		
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Thanks for testing");
+		card.setContent(cancelResponse);
+		// card.setContent(fallbackSpeechText);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(cancelResponse);
+		
+		return SpeechletResponse.newTellResponse(speech , card);
+	}
+
+	private SpeechletResponse genericStopResponse() {
+		
+		final String stopResponse = "Thanks for trying out the test app. Goodbye.";
+		
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Thanks for testing");
+		card.setContent(stopResponse);
+		// card.setContent(fallbackSpeechText);
+		
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(stopResponse);
+		
+		return SpeechletResponse.newTellResponse(speech, card);
+	}
+	
 }

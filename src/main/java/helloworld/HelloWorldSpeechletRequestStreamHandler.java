@@ -29,7 +29,8 @@ public final class HelloWorldSpeechletRequestStreamHandler extends SpeechletRequ
          */
 //        supportedApplicationIds.add("amzn1.ask.skill.xxxxxxxx");
     	supportedApplicationIds.add("amzn1.ask.skill.dbab7e7e-cc08-4f11-974f-e302f92cb074");
-    	supportedApplicationIds.add("amzn1.ask.skill.0127b4dc-4c90-498c-9821-85719b4523f1"); //for skill 'TestSkill'
+    	supportedApplicationIds.add("amzn1.ask.skill.0127b4dc-4c90-498c-9821-85719b4523f1"); //for skill 'TestSkill' integration
+    	supportedApplicationIds.add("amzn1.ask.skill.7b1db5e4-9177-4932-baa7-230ac8e6fa69"); //for 'BookingRefSkill' integration
     	
     	// amzn1.ask.skill.dbab7e7e-cc08-4f11-974f-e302f92cb074
         
